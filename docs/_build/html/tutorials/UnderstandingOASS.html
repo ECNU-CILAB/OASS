@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Understanding OASS &mdash; OASS 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="OASS for Shortest Path" href="ShortestPath.html" />
+    <link rel="prev" title="Welcome to OASS!" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> OASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Understanding OASS</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-theory">Basic Theory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#integration-with-reinforcement-learning-theory">Integration with Reinforcement Learning Theory</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#discount-factor">Discount Factor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#baseline-strategy">Baseline Strategy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#extra-function">Extra Function</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ShortestPath.html">OASS for Shortest Path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AlgorithmicTrading.html">OASS for Algorithmic Trading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OrderExecution.html">OASS for Order Execution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.StaticDirectedAcyclicGraph.html">oass.StaticDirectedAcyclicGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.GradientCalculator.html">oass.GradientCalculator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.AlgorithmicTrading.html">oass.AlgorithmicTrading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.ShortestPath.html">oass.ShortestPath</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>Understanding OASS</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/UnderstandingOASS.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="understanding-oass">
+<h1>Understanding OASS<a class="headerlink" href="#understanding-oass" title="Permalink to this headline"></a></h1>
+<section id="basic-theory">
+<h2>Basic Theory<a class="headerlink" href="#basic-theory" title="Permalink to this headline"></a></h2>
+<p>Optimal Action Space Search (OASS) is an algorithm for path planning problems on directed acyclic graphs (DAG) based on reinforcement learning (RL) theory. This document will help you understand the basic theory of OASS.</p>
+<p>First we need to clarify what a directed acyclic graph is. A directed graph <img class="math" src="../_images/math/89878909dbb648acdc4a44ded1bd982d7bddef5d.png" alt="G"/> is usually defined as the set of vertices (nodes) and edges, i.e. <img class="math" src="../_images/math/9ed9e89b3215a6c7630e4412d008f9c60f36f668.png" alt="G=(V,E)"/>, where <img class="math" src="../_images/math/e4762cec46619bf7781cae62216214f909395368.png" alt="V"/> is the set containing all vertices, <img class="math" src="../_images/math/abcbc04b3360b1e5b047ab565f8a88dba1730dd5.png" alt="E\subset V\times V"/> is the set of all edges. For example, the following figure is an example of a directed graph.</p>
+<div class="math">
+<p><img src="../_images/math/6799a9e11601ae14f2b4bb6d8c5730d476a1121e.png" alt="V=\{0,1,2,3,4,5,6\},"/></p>
+</div><div class="math">
+<p><img src="../_images/math/b5a0f622a1116ce068eea9d464dbc06c64c62636.png" alt="E=\{
+\langle 0,1\rangle,
+\langle 0,3\rangle,
+\langle 1,4\rangle,
+\langle 2,0\rangle,
+\langle 2,3\rangle,
+\langle 2,5\rangle,
+\langle 3,1\rangle,
+\langle 3,4\rangle,
+\langle 4,6\rangle,
+\langle 5,3\rangle,
+\langle 5,6\rangle
+\}."/></p>
+</div><img alt="../_images/1.jpg" src="../_images/1.jpg" />
+<p>As for directed acyclic graphs, they are directed graphs without loops. Of course, the above example is also a directed acyclic graph. In addition, we add a reward to each node and each edge. Use <img class="math" src="../_images/math/e476fb47830f0e6f2cb739793262537a20817210.png" alt="R(u)"/> to denote the reward obtained when arriving at node <img class="math" src="../_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/>, and <img class="math" src="../_images/math/b09c596d2cc27a346df2342920432e6e64b2e93d.png" alt="R(\langle u,v\rangle)"/> to denote the reward obtained when passing through edge <img class="math" src="../_images/math/1ff0c64562fab54f93aee5de0886bb4598b5131a.png" alt="\langle u,v\rangle"/>. We want to find a path <img class="math" src="../_images/math/d0b4c599a6bdbc0b3f462e2f502973bc40014cce.png" alt="(u_1,u_2,\dots,u_n)"/> such that the sum of the rewards obtained when passing through this path is maximized, i.e.</p>
+<div class="math">
+<p><img src="../_images/math/5a4e719207420e159ca9b92bd1a12b059b30a27f.png" alt="\mathop{\arg\max}_{u_1,u_2,\dots,u_n}R=\sum_{i=1}^n R(u_i)+\sum_{i=1}^{n-1}R(\langle u_i,u_{i+1}\rangle),"/></p>
+</div><div class="math">
+<p><img src="../_images/math/574c33b0985a158bfb54c3c6e27a90aa875f669c.png" alt="s.t. \begin{cases}
+u_i\in V,&amp;i=1,2,\dots,n,\\
+\langle u_i,u_{i+1} \rangle\in E,&amp;i=1,2,\dots,n-1.
+\end{cases}"/></p>
+</div><img alt="../_images/2.jpg" src="../_images/2.jpg" />
+<p>This is just an algorithmic problem and is not difficult to solve. First we perform topological sorting. Topological sorting is to sort all nodes so as to ensure that: if edge <img class="math" src="../_images/math/1ff0c64562fab54f93aee5de0886bb4598b5131a.png" alt="\langle u,v\rangle"/> exists, then node <img class="math" src="../_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> ranks in front of <img class="math" src="../_images/math/02d98909b5d6acd6a7ff927d4d42790bdd407d58.png" alt="v"/> in the sorting result. The topological sort is simple: find the node with entry degree <img class="math" src="../_images/math/31fdf41b39df23c95e52c5aef07f59d9adf82f3c.png" alt="0"/> (the node without any edge pointing to it), then delete it, and repeat the process.</p>
+<img alt="../_images/3.jpg" src="../_images/3.jpg" />
+<img alt="../_images/4.jpg" src="../_images/4.jpg" />
+<img alt="../_images/5.jpg" src="../_images/5.jpg" />
+<p>Record the order in which these nodes are deleted, which is the result of the topological sort.</p>
+<div class="math">
+<p><img src="../_images/math/fce70cf4237ebf9d4d8e6a19978bc25e919cc3bb.png" alt="(2,0,5,3,1,4,6)"/></p>
+</div><div class="admonition note">
+<p class="admonition-title">Note</p>
+<ol class="arabic simple">
+<li><p>If there are no nodes with entry degree <img class="math" src="../_images/math/31fdf41b39df23c95e52c5aef07f59d9adf82f3c.png" alt="0"/> in a particular step, it means that there is a ring in this graph.</p></li>
+<li><p>The result of topological sorting is not unique. Notice that after the first step, the entry degree of both node <img class="math" src="../_images/math/31fdf41b39df23c95e52c5aef07f59d9adf82f3c.png" alt="0"/> and node <img class="math" src="../_images/math/51d4ace3c51c5a5490fc4464952d6c46d518fbc8.png" alt="5"/> is <img class="math" src="../_images/math/31fdf41b39df23c95e52c5aef07f59d9adf82f3c.png" alt="0"/>, so it is also reasonable to delete node <img class="math" src="../_images/math/51d4ace3c51c5a5490fc4464952d6c46d518fbc8.png" alt="5"/> in the second step.</p></li>
+</ol>
+</div>
+<p>Next, we denote by <img class="math" src="../_images/math/74544110ffd311d4fcba9d2606d40f24456c2475.png" alt="G(u)"/> the subsequent rewards obtained when starting at <img class="math" src="../_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> and by <img class="math" src="../_images/math/58b663e9a8d9e877cccf23af80e57191b055db55.png" alt="G^*(u)"/> the maximum value of <img class="math" src="../_images/math/74544110ffd311d4fcba9d2606d40f24456c2475.png" alt="G(u)"/> provided that the optimal strategy is adopted, excluding the rewards obtained when arriving at node <img class="math" src="../_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/> and before that. Obviously, a dynamic programming algorithm can be constructed using a simple state transfer equation.</p>
+<div class="math">
+<p><img src="../_images/math/fc10aca814114696b1ba481ca8760d4a4a556a20.png" alt="G^*(u)=\mathop{\arg\max}_{v\in N(u)} (R(v)+G^*(v)),"/></p>
+</div><p>where <img class="math" src="../_images/math/db27a108fb54c6f6688cb27f53a8dc461d362921.png" alt="N(u)=\{v|\langle u,v\rangle\in E\}"/> denotes the set of nodes that can be reached in one step starting from node <img class="math" src="../_images/math/9b444cf6329a14140aee8ff5a06ff30772cc1c2f.png" alt="u"/>. The premise of using this formula to compute the optimal strategy is that <img class="math" src="../_images/math/debd8accc0c704269fc201924fce55b4d5f8c99d.png" alt="\{G^*(v)|v\in N(u)\}"/> has been computed before computing <img class="math" src="../_images/math/58b663e9a8d9e877cccf23af80e57191b055db55.png" alt="G^*(u)"/>. It is only necessary to compute the results in reverse order according to the topological ordering.</p>
+<p>This is a very simple problem, isn’t it? But note that being able to do so assumes that we can see the complete graph structure. If at each node we can only observe a little bit of information <img class="math" src="../_images/math/3acdb4192becd46a60fda144af8d223b735c70c3.png" alt="O(u)"/>, consider constructing a strategy using some neural network structure <img class="math" src="../_images/math/9cc8517129c87252edd7fe2e4532af9dcf7a54d9.png" alt="\pi"/>. We use <img class="math" src="../_images/math/188a996edd80925382421f0279f189286d6f0192.png" alt="\pi(v|O(u))"/> to denote the probability of the next move to node <img class="math" src="../_images/math/02d98909b5d6acd6a7ff927d4d42790bdd407d58.png" alt="v"/>, and of course</p>
+<div class="math">
+<p><img src="../_images/math/bfe7ed23248baa933cd4774437b5a6a6eb6dac60.png" alt="\sum_{v\in N(u)}\pi(v|O(u))=1."/></p>
+</div><p>If the strategy <img class="math" src="../_images/math/9cc8517129c87252edd7fe2e4532af9dcf7a54d9.png" alt="\pi"/> is strong enough, it is possible to achieve <img class="math" src="../_images/math/68f747dc105f66c712e212935dd8a0c6ba945b8c.png" alt="G(u)=G^*(u)"/>. We compute the mathematical expectation <img class="math" src="../_images/math/9376b18a5232dbef1c8a37093991e3d4bf578db4.png" alt="E(G(u)|\pi)"/> based on the strategy <img class="math" src="../_images/math/9cc8517129c87252edd7fe2e4532af9dcf7a54d9.png" alt="\pi"/>.</p>
+<div class="math">
+<p><img src="../_images/math/ac3abb9390b91d449488d3c4328a789fdadc6f72.png" alt="E(G(u)|\pi)=\sum_{v\in N(u)}\pi\big(v|O(u)\big)\Big(R(\langle u,v\rangle)+R(v)+E\big(G(v)|\pi\big)\Big)."/></p>
+</div><p>In a similar way, the results are calculated in reverse order according to the topological sort.</p>
+<img alt="../_images/6.jpg" src="../_images/6.jpg" />
+<p>We want to make <img class="math" src="../_images/math/9376b18a5232dbef1c8a37093991e3d4bf578db4.png" alt="E(G(u)|\pi)"/> as large as possible. Since a neural network model is used, using a gradient-based optimization algorithm is a feasible solution. <img class="math" src="../_images/math/9376b18a5232dbef1c8a37093991e3d4bf578db4.png" alt="E(G(u)|\pi)"/> cannot be utilized as a loss function because it relies on the value of <img class="math" src="../_images/math/248d5917dd00cde5ac04db1fd51cd400197bf66d.png" alt="E(G(v)|\pi)"/>, which may cause the gradient calculation to be complex and slow. To avoid this pitfall, we directly treat <img class="math" src="../_images/math/248d5917dd00cde5ac04db1fd51cd400197bf66d.png" alt="E(G(v)|\pi)"/> as a constant and perform single-step optimization.</p>
+<div class="math">
+<p><img src="../_images/math/393488a275cf96db41193cb88bcd84cbb38d1694.png" alt="\nabla \mathcal L=\sum_{v\in N(u)}\Big(R(\langle u,v\rangle)+R(v)+E\big(G(v)|\pi\big)\Big)\nabla\pi\big(v|O(u)\big)."/></p>
+</div><p>In other words, the coefficients <img class="math" src="../_images/math/bef0a3d8e91e9844f66e69fb8b549099aa9e814e.png" alt="R(\langle u,v\rangle)+R(v)+E\big(G(v)|\pi\big)"/> can be directly passed as gradients to the output layer <img class="math" src="../_images/math/10546a50cb85e26d3f7e6974d3f50267b089e8e0.png" alt="\pi\big(v|O(u)\big)"/> of the neural network for optimization.</p>
+</section>
+<section id="integration-with-reinforcement-learning-theory">
+<h2>Integration with Reinforcement Learning Theory<a class="headerlink" href="#integration-with-reinforcement-learning-theory" title="Permalink to this headline"></a></h2>
+<p>The above theory is not enough to build a robust algorithm, but also needs to refer to modern reinforcement learning theory for more refined adjustment. The final gradient formula is</p>
+<img alt="../_images/7.jpg" src="../_images/7.jpg" />
+<section id="discount-factor">
+<h3>Discount Factor<a class="headerlink" href="#discount-factor" title="Permalink to this headline"></a></h3>
+<p>In modern reinforcement learning theory, the reward function <img class="math" src="../_images/math/74544110ffd311d4fcba9d2606d40f24456c2475.png" alt="G(u)"/> usually carries a discount factor <img class="math" src="../_images/math/cec1a02777451d174a26a4ebd7e63173f29840f6.png" alt="\gamma\in [0,1]"/>, i.e.</p>
+<div class="math">
+<p><img src="../_images/math/49467efa82fbe359190e5e5d89e9e5440a79a0a4.png" alt="G(u_1)=
+\big(R(\langle u_1,u_2\rangle)+R(u_2)\big)
++\gamma\big(R(\langle u_2,u_3\rangle)+R(u_3)\big)
++\gamma^2\big(R(\langle u_3,u_4\rangle)+R(u_4)\big)
++\dots"/></p>
+</div><p>When <img class="math" src="../_images/math/c126e7e8441738adb6ebda0524e46d35f28bf14c.png" alt="\gamma=1"/>, it is exactly the same as described in the previous section. When <img class="math" src="../_images/math/c84633c40ffe029250deab1ae2633ae162123214.png" alt="\gamma&lt;1"/>, i.e., short-term rewards are considered more important than future rewards. We set the discount factor to a customizable hyperparameter, but we still do not recommend using values other than <img class="math" src="../_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/>, as this may cause the OASS method to not perceive the distant rewards.</p>
+</section>
+<section id="baseline-strategy">
+<h3>Baseline Strategy<a class="headerlink" href="#baseline-strategy" title="Permalink to this headline"></a></h3>
+<p>Noting that the range of values of the coefficients <img class="math" src="../_images/math/bef0a3d8e91e9844f66e69fb8b549099aa9e814e.png" alt="R(\langle u,v\rangle)+R(v)+E\big(G(v)|\pi\big)"/> depends on the definition of <img class="math" src="../_images/math/1ebe654cc7b8f2a0d8100aa5825cf2b9021adbbc.png" alt="R"/>, we want to better guide the strategy <img class="math" src="../_images/math/9cc8517129c87252edd7fe2e4532af9dcf7a54d9.png" alt="\pi"/> to update in the direction of improvement, and therefore introduce the baseline in reinforcement learning. The coefficient after adding the baseline is usually referred to as the advantage function in reinforcement learning. A positive value indicates that increasing the corresponding probability value results in more reward, and a negative value indicates that decreasing the corresponding probability value results in more reward.</p>
+<p>We provide three methods for calculating the baseline <img class="math" src="../_images/math/b3b3e09dcc6c7a636792ae19c67317e4e44aac59.png" alt="b(u)"/>, which can be implemented by modifying the <code class="docutils literal notranslate"><span class="pre">baseline_strategy</span></code> in <code class="docutils literal notranslate"><span class="pre">oass.GradientCalculator</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;zero&quot;</span></code>: No baseline.</p></li>
+</ul>
+<div class="math">
+<p><img src="../_images/math/012966fc1473d4fdc0ccccb73ca81271b72b23ea.png" alt="b(u)=0."/></p>
+</div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;random&quot;</span></code>: Comparison with uniform random strategy (default value).</p></li>
+</ul>
+<div class="math">
+<p><img src="../_images/math/3c7e256a6e36bf038e8ace6c31190aa3f62b4021.png" alt="b(u)=\sum_{v\in N(u)}\frac{1}{N(u)}\Big(R(\langle u,v\rangle)+R(v)+E\big(G(v)|\pi\big)\Big)."/></p>
+</div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;self&quot;</span></code>: Comparison with itself.</p></li>
+</ul>
+<div class="math">
+<p><img src="../_images/math/8f8f47c663ef599fe9ae36e589bca6a5a4f7080e.png" alt="b(u)=E(G(u)|\pi)."/></p>
+</div></section>
+<section id="extra-function">
+<h3>Extra Function<a class="headerlink" href="#extra-function" title="Permalink to this headline"></a></h3>
+<p>Among the many reinforcement learning methods such as A2C, PPO, etc., there is usually a <img class="math" src="../_images/math/90eb14edc497dbb0201093da883af2d5d55ca964.png" alt="\log"/> function, i.e.</p>
+<div class="math">
+<p><img src="../_images/math/c1cab943ea760791df827fd0ff45321df844f40c.png" alt="\nabla \mathcal L=\sum_{v\in N(u)}\Big(R(\langle u,v\rangle)+R(v)+\gamma E\big(G(v)|\pi\big)-b(u)\Big)\nabla\log\pi\big(v|O(u)\big)."/></p>
+</div><p>The reinforcement learning theoretical framework has its own set of theoretical support for this <img class="math" src="../_images/math/90eb14edc497dbb0201093da883af2d5d55ca964.png" alt="\log"/> function, but in our experiments we found that the <img class="math" src="../_images/math/90eb14edc497dbb0201093da883af2d5d55ca964.png" alt="\log"/> function sometimes speeds up convergence, but sometimes leads to model instability. Therefore we make it a customizable hyperparameter and do not use the <img class="math" src="../_images/math/90eb14edc497dbb0201093da883af2d5d55ca964.png" alt="\log"/> function by default. You can change it by modifying <code class="docutils literal notranslate"><span class="pre">extra_function</span></code> in <code class="docutils literal notranslate"><span class="pre">oass.GradientCalculator</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>: No extra functions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;log&quot;</span></code>: Using <img class="math" src="../_images/math/90eb14edc497dbb0201093da883af2d5d55ca964.png" alt="\log"/> function.</p></li>
+</ul>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to OASS!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ShortestPath.html" class="btn btn-neutral float-right" title="OASS for Shortest Path" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Artiprocher.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

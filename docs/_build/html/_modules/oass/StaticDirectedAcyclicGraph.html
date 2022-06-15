@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oass.StaticDirectedAcyclicGraph &mdash; OASS 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> OASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/UnderstandingOASS.html">Understanding OASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/ShortestPath.html">OASS for Shortest Path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/AlgorithmicTrading.html">OASS for Algorithmic Trading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/OrderExecution.html">OASS for Order Execution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oass.StaticDirectedAcyclicGraph.html">oass.StaticDirectedAcyclicGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oass.GradientCalculator.html">oass.GradientCalculator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oass.AlgorithmicTrading.html">oass.AlgorithmicTrading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api/oass.ShortestPath.html">oass.ShortestPath</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>oass.StaticDirectedAcyclicGraph</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for oass.StaticDirectedAcyclicGraph</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">warnings</span>
+
+
+<div class="viewcode-block" id="StaticDirectedAcyclicGraph"><a class="viewcode-back" href="../../api/oass.StaticDirectedAcyclicGraph.html#oass.StaticDirectedAcyclicGraph">[docs]</a><span class="k">class</span> <span class="nc">StaticDirectedAcyclicGraph</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Static Directed Acyclic Graph (DAG).</span>
+<span class="sd">    </span>
+<span class="sd">    OASS is able to perform path planning on directed acyclic graphs. You can use this class to build a directed acyclic graph.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        node2index (dict): The ``dict`` that maps each node name to node index.</span>
+<span class="sd">        node (list): The node name of each node.</span>
+<span class="sd">        edge (list(list(int))): All directed edges.</span>
+<span class="sd">        n (int): The number of nodes.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node2index</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+
+<div class="viewcode-block" id="StaticDirectedAcyclicGraph.add_node"><a class="viewcode-back" href="../../api/oass.StaticDirectedAcyclicGraph.html#oass.StaticDirectedAcyclicGraph.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a node to the graph.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            node (any hashable type): The name of this node.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If a node with the same name already exists in the graph, nothing will happen.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">node2index</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node2index</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node2index</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="o">.</span><span class="n">append</span><span class="p">([])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="StaticDirectedAcyclicGraph.add_edge"><a class="viewcode-back" href="../../api/oass.StaticDirectedAcyclicGraph.html#oass.StaticDirectedAcyclicGraph.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a directed edge &lt;u, v&gt; to the graph.</span>
+<span class="sd">        </span>
+<span class="sd">        Args:</span>
+<span class="sd">            u (any hashable type): The start node of this edge.</span>
+<span class="sd">            v (any hashable type): The end node of this edge.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            You must ensure that both nodes u and v exist in the graph.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">u_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node2index</span><span class="p">[</span><span class="n">u</span><span class="p">]</span>
+        <span class="n">v_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">node2index</span><span class="p">[</span><span class="n">v</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="p">[</span><span class="n">u_index</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v_index</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="StaticDirectedAcyclicGraph.topological_sort"><a class="viewcode-back" href="../../api/oass.StaticDirectedAcyclicGraph.html#oass.StaticDirectedAcyclicGraph.topological_sort">[docs]</a>    <span class="k">def</span> <span class="nf">topological_sort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate the topological ordering of nodes.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            topological_node (list): The topological sorting result of nodes.</span>
+<span class="sd">        </span>
+<span class="sd">        .. note::</span>
+<span class="sd">            1. Please make sure that the constructed graph is acyclic, otherwise this function will give a warning.</span>
+<span class="sd">            2. If the topological order of the nodes is not unique, we will sort the nodes in the order they are added.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">indeg</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span>
+        <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+                <span class="n">indeg</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">start_node</span> <span class="o">=</span> <span class="p">[</span><span class="n">u</span> <span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)</span> <span class="k">if</span> <span class="n">indeg</span><span class="p">[</span><span class="n">u</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topological_node</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">start_node</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">u</span> <span class="o">=</span> <span class="n">start_node</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topological_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge</span><span class="p">[</span><span class="n">u</span><span class="p">]:</span>
+                <span class="n">indeg</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">indeg</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">start_node</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topological_node</span><span class="p">)</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;This graph is not a DAG.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">topological_node</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Artiprocher.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

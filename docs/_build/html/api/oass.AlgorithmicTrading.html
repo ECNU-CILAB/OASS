@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oass.AlgorithmicTrading &mdash; OASS 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oass.ShortestPath" href="oass.ShortestPath.html" />
+    <link rel="prev" title="oass.GradientCalculator" href="oass.GradientCalculator.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> OASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/UnderstandingOASS.html">Understanding OASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/ShortestPath.html">OASS for Shortest Path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/AlgorithmicTrading.html">OASS for Algorithmic Trading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/OrderExecution.html">OASS for Order Execution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="oass.StaticDirectedAcyclicGraph.html">oass.StaticDirectedAcyclicGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oass.GradientCalculator.html">oass.GradientCalculator</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">oass.AlgorithmicTrading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oass.ShortestPath.html">oass.ShortestPath</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>oass.AlgorithmicTrading</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/oass.AlgorithmicTrading.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="oass-algorithmictrading">
+<h1>oass.AlgorithmicTrading<a class="headerlink" href="#oass-algorithmictrading" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="oass.AlgorithmicTrading.DecisionMakerOASS">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">oass.AlgorithmicTrading.</span></span><span class="sig-name descname"><span class="pre">DecisionMakerOASS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head_mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail_mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device(type='cuda')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/AlgorithmicTrading.html#DecisionMakerOASS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.AlgorithmicTrading.DecisionMakerOASS" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The decision maker of OASS for algorithmic trading.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>head_mask</strong> (<em>int</em>) – <code class="docutils literal notranslate"><span class="pre">head_mask</span></code>.</p></li>
+<li><p><strong>tail_mask</strong> (<em>int</em>) – <code class="docutils literal notranslate"><span class="pre">tail_mask</span></code>.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em>) – The computing device.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="oass.AlgorithmicTrading.TrainerOASS">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">oass.AlgorithmicTrading.</span></span><span class="sig-name descname"><span class="pre">TrainerOASS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">head_mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tail_mask</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sequence_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buy_cost_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sell_cost_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">device(type='cuda')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/AlgorithmicTrading.html#TrainerOASS"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.AlgorithmicTrading.TrainerOASS" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The trainer of OASS for algorithmic trading.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>head_mask</strong> (<em>int</em>) – <code class="docutils literal notranslate"><span class="pre">head_mask</span></code>.</p></li>
+<li><p><strong>tail_mask</strong> (<em>int</em>) – <code class="docutils literal notranslate"><span class="pre">tail_mask</span></code>.</p></li>
+<li><p><strong>sequence_length</strong> (<em>int</em>) – The length of each sequence.</p></li>
+<li><p><strong>buy_cost_pct</strong> (<em>float</em>) – The cost ratio when the agent chooses to buy.</p></li>
+<li><p><strong>sell_cost_pct</strong> (<em>float</em>) – The cost ratio when the agent chooses to sell.</p></li>
+<li><p><strong>gamma</strong> (<em>float</em>) – The discount factor in the reward value function.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em>) – The computing device.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oass.AlgorithmicTrading.TrainerOASS.difficulty">
+<span class="sig-name descname"><span class="pre">difficulty</span></span><a class="headerlink" href="#oass.AlgorithmicTrading.TrainerOASS.difficulty" title="Permalink to this definition"></a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">difficulty</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oass.AlgorithmicTrading.TrainerOASS.build_graph">
+<span class="sig-name descname"><span class="pre">build_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/AlgorithmicTrading.html#TrainerOASS.build_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.AlgorithmicTrading.TrainerOASS.build_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Build a DAG.</p>
+<p>Assuming that the <code class="docutils literal notranslate"><span class="pre">sequence_length</span></code> is <img class="math" src="../_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/>, then there are <img class="math" src="../_images/math/24f8298394590840f50413ac40c1aec8c95fc4f2.png" alt="3n"/> nodes in the graph. A node is represented as <img class="math" src="../_images/math/e46bb382d4bf38326a1576fdca7971278357ca0a.png" alt="(i, j)"/>, where <img class="math" src="../_images/math/d59cbc085cd5985952f02c3d88a927a2e88a5a3c.png" alt="i\in\{0,1,\dots,n-1\}"/> represents the time step and <img class="math" src="../_images/math/7c2e72cdb4693e613d8fb3e404e692eea1100771.png" alt="j\in\{-1,0,1\}"/> represents the number of stocks held.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oass.AlgorithmicTrading.TrainerOASS.calculate_reward">
+<span class="sig-name descname"><span class="pre">calculate_reward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">buy_price_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sell_price_batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buy_cost_pct</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sell_cost_pct</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/AlgorithmicTrading.html#TrainerOASS.calculate_reward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.AlgorithmicTrading.TrainerOASS.calculate_reward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the node rewards and edge rewards.</p>
+<p>In this problem, these rewards are dynamic. The node reward represents the corresponding stock value at the last time step, and is zero at other time steps. The edge rewards represent the change of money. For example, the edge reward of <img class="math" src="../_images/math/d437b6cb643dda0c3e6f49d2d15a887b43e6cb05.png" alt="\langle(i,0), (i+1,1)\rangle"/> is <img class="math" src="../_images/math/834ac346352c01d947074e2ce955c14f32b51af8.png" alt="-p(1+\alpha)"/>, where <img class="math" src="../_images/math/141bbefb74014fc5e43499901bf78607ae335583.png" alt="p"/> is the price and <img class="math" src="../_images/math/2f5aa019312e1bbc969deab8dca8b00f76025404.png" alt="\alpha"/> is the transaction cost ratio.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buy_price_batch</strong> (<em>torch.Tensor</em>) – A batch of buy price. The shape is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">sequence_length)</span></code>.</p></li>
+<li><p><strong>sell_price_batch</strong> (<em>torch.Tensor</em>) – A batch of sell price. The shape is <code class="docutils literal notranslate"><span class="pre">(batch_size,</span> <span class="pre">sequence_length)</span></code>.</p></li>
+<li><p><strong>buy_cost_pct</strong> (<em>float</em>) – The cost ratio when the agent chooses to buy.</p></li>
+<li><p><strong>sell_cost_pct</strong> (<em>float</em>) – The cost ratio when the agent chooses to sell.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The reward when arriving at each node. The shape is <code class="docutils literal notranslate"><span class="pre">(sequence_length,</span> <span class="pre">3,</span> <span class="pre">batch_size)</span></code>.
+edge_reward (torch.Tensor): The reward when passing each edge. The shape is <code class="docutils literal notranslate"><span class="pre">(sequence_length,</span> <span class="pre">3,</span> <span class="pre">batch_size)</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>node_reward (torch.Tensor)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oass.AlgorithmicTrading.TrainerOASS.test_epoch">
+<span class="sig-name descname"><span class="pre">test_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_loader</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/AlgorithmicTrading.html#TrainerOASS.test_epoch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.AlgorithmicTrading.TrainerOASS.test_epoch" title="Permalink to this definition"></a></dt>
+<dd><p>Test the model for an epoch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – The neural network model.</p></li>
+<li><p><strong>data_loader</strong> (<em>torch.utils.data.DataLoader</em>) – The data loader which contains the <code class="docutils literal notranslate"><span class="pre">dev</span></code> (or <code class="docutils literal notranslate"><span class="pre">test</span></code>) dataset.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The average loss and reward of each sequence in the data loader.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>sum_loss, sum_reward (float, float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oass.AlgorithmicTrading.TrainerOASS.train_epoch">
+<span class="sig-name descname"><span class="pre">train_epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_loader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/AlgorithmicTrading.html#TrainerOASS.train_epoch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.AlgorithmicTrading.TrainerOASS.train_epoch" title="Permalink to this definition"></a></dt>
+<dd><p>Train the model for an epoch.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model</strong> (<em>torch.nn.Module</em>) – The neural network model.</p></li>
+<li><p><strong>data_loader</strong> (<em>torch.utils.data.DataLoader</em>) – The data loader which contains the <code class="docutils literal notranslate"><span class="pre">train</span></code> dataset.</p></li>
+<li><p><strong>optimizer</strong> (<em>torch.optim.Adam</em>) – The optimizer provided by PyTorch.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The average loss and reward of each sequence in the data loader.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>sum_loss, sum_reward (float, float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oass.GradientCalculator.html" class="btn btn-neutral float-left" title="oass.GradientCalculator" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oass.ShortestPath.html" class="btn btn-neutral float-right" title="oass.ShortestPath" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Artiprocher.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

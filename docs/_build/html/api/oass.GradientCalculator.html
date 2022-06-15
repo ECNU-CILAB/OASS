@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>oass.GradientCalculator &mdash; OASS 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oass.AlgorithmicTrading" href="oass.AlgorithmicTrading.html" />
+    <link rel="prev" title="oass.StaticDirectedAcyclicGraph" href="oass.StaticDirectedAcyclicGraph.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> OASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/UnderstandingOASS.html">Understanding OASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/ShortestPath.html">OASS for Shortest Path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/AlgorithmicTrading.html">OASS for Algorithmic Trading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/OrderExecution.html">OASS for Order Execution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="oass.StaticDirectedAcyclicGraph.html">oass.StaticDirectedAcyclicGraph</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">oass.GradientCalculator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oass.AlgorithmicTrading.html">oass.AlgorithmicTrading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="oass.ShortestPath.html">oass.ShortestPath</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>oass.GradientCalculator</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/oass.GradientCalculator.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="oass-gradientcalculator">
+<h1>oass.GradientCalculator<a class="headerlink" href="#oass-gradientcalculator" title="Permalink to this headline"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="oass.GradientCalculator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">oass.</span></span><span class="sig-name descname"><span class="pre">GradientCalculator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">baseline_strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'random'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'None'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/GradientCalculator.html#GradientCalculator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.GradientCalculator" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The gradient calculater.</p>
+<p>This part is implemented completely based on <code class="docutils literal notranslate"><span class="pre">numpy</span></code>, so it naturally supports <code class="docutils literal notranslate"><span class="pre">PyTorch</span></code>, <code class="docutils literal notranslate"><span class="pre">TensorFlow</span></code> and other deep learning frameworks.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oass.GradientCalculator.gamma">
+<span class="sig-name descname"><span class="pre">gamma</span></span><a class="headerlink" href="#oass.GradientCalculator.gamma" title="Permalink to this definition"></a></dt>
+<dd><p>The discount factor. Default: 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oass.GradientCalculator.baseline_strategy">
+<span class="sig-name descname"><span class="pre">baseline_strategy</span></span><a class="headerlink" href="#oass.GradientCalculator.baseline_strategy" title="Permalink to this definition"></a></dt>
+<dd><p>The calculation method of baseline value. It can be <code class="docutils literal notranslate"><span class="pre">&quot;random&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;self&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;zero&quot;</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;random&quot;</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="oass.GradientCalculator.extra_function">
+<span class="sig-name descname"><span class="pre">extra_function</span></span><a class="headerlink" href="#oass.GradientCalculator.extra_function" title="Permalink to this definition"></a></dt>
+<dd><p>The extra function applied on <code class="docutils literal notranslate"><span class="pre">action_prob</span></code>. It can be <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;log&quot;</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oass.GradientCalculator.calculate_gradient">
+<span class="sig-name descname"><span class="pre">calculate_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="oass.StaticDirectedAcyclicGraph.html#oass.StaticDirectedAcyclicGraph" title="oass.StaticDirectedAcyclicGraph.StaticDirectedAcyclicGraph"><span class="pre">oass.StaticDirectedAcyclicGraph.StaticDirectedAcyclicGraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_reward</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_reward</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/GradientCalculator.html#GradientCalculator.calculate_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.GradientCalculator.calculate_gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate gradient for a DAG.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> (<a class="reference internal" href="oass.StaticDirectedAcyclicGraph.html#oass.StaticDirectedAcyclicGraph" title="oass.StaticDirectedAcyclicGraph"><em>StaticDirectedAcyclicGraph</em></a>) – The DAG.</p></li>
+<li><p><strong>action_prob</strong> (<em>array-like type</em>) – The probabilities that the agent chooses each edge. The way it is saved needs to be consistent with <code class="docutils literal notranslate"><span class="pre">G.edge</span></code>. At each node u, <code class="docutils literal notranslate"><span class="pre">action_prob[u]</span></code> is a <img class="math" src="../_images/math/f453616c970c74b63984523a43d2017658ba9704.png" alt="|N(u)|"/> x batch_size matrix.</p></li>
+<li><p><strong>node_reward</strong> (<em>array-like type</em>) – The reward when arriving at each node. It is an array that contains <img class="math" src="../_images/math/2e8b4e9b99c86063707cb3e2f642d3278cab3871.png" alt="|V|"/> reward values.</p></li>
+<li><p><strong>edge_reward</strong> (<em>array-like type</em>) – The reward when passing each edge. At each node u, <code class="docutils literal notranslate"><span class="pre">edge_reward[u]</span></code> is an array that contains <img class="math" src="../_images/math/f453616c970c74b63984523a43d2017658ba9704.png" alt="|N(u)|"/> reward values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The mathematical expectation of the subsequent rewards when starting with each node.
+D (list(np.array)): The gradient value for updating <code class="docutils literal notranslate"><span class="pre">action_prob</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>E (np.array)</p>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For ease of use, <code class="docutils literal notranslate"><span class="pre">action_prob</span></code> may contain additional values, but must cover all the edges.</p>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="oass.GradientCalculator.get_path">
+<span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">G</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="oass.StaticDirectedAcyclicGraph.html#oass.StaticDirectedAcyclicGraph" title="oass.StaticDirectedAcyclicGraph.StaticDirectedAcyclicGraph"><span class="pre">oass.StaticDirectedAcyclicGraph.StaticDirectedAcyclicGraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">action_prob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strategy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'argmax'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/oass/GradientCalculator.html#GradientCalculator.get_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#oass.GradientCalculator.get_path" title="Permalink to this definition"></a></dt>
+<dd><p>Choose the edge with the highest probability to get a path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>G</strong> (<a class="reference internal" href="oass.StaticDirectedAcyclicGraph.html#oass.StaticDirectedAcyclicGraph" title="oass.StaticDirectedAcyclicGraph"><em>StaticDirectedAcyclicGraph</em></a>) – The DAG.</p></li>
+<li><p><strong>action_prob</strong> (<em>array-like type</em>) – The probabilities that the agent chooses each edge. The way it is saved needs to be consistent with <code class="docutils literal notranslate"><span class="pre">G.edge</span></code>. At each node u, <code class="docutils literal notranslate"><span class="pre">action_prob[u]</span></code> is a <img class="math" src="../_images/math/f453616c970c74b63984523a43d2017658ba9704.png" alt="|N(u)|"/> dimension vector.</p></li>
+<li><p><strong>start_node</strong> (<em>any hashable type</em>) – The starting node.</p></li>
+<li><p><strong>strategy</strong> (<em>str</em>) – The strategy to choose actions. It can be <code class="docutils literal notranslate"><span class="pre">argmax</span></code> or <code class="docutils literal notranslate"><span class="pre">probability</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The path determined by <code class="docutils literal notranslate"><span class="pre">action_prob</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>path (list)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="oass.StaticDirectedAcyclicGraph.html" class="btn btn-neutral float-left" title="oass.StaticDirectedAcyclicGraph" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="oass.AlgorithmicTrading.html" class="btn btn-neutral float-right" title="oass.AlgorithmicTrading" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Artiprocher.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

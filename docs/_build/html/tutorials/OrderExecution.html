@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OASS for Order Execution &mdash; OASS 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="oass.StaticDirectedAcyclicGraph" href="../api/oass.StaticDirectedAcyclicGraph.html" />
+    <link rel="prev" title="OASS for Algorithmic Trading" href="AlgorithmicTrading.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> OASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="UnderstandingOASS.html">Understanding OASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ShortestPath.html">OASS for Shortest Path</a></li>
+<li class="toctree-l1"><a class="reference internal" href="AlgorithmicTrading.html">OASS for Algorithmic Trading</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OASS for Order Execution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.StaticDirectedAcyclicGraph.html">oass.StaticDirectedAcyclicGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.GradientCalculator.html">oass.GradientCalculator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.AlgorithmicTrading.html">oass.AlgorithmicTrading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.ShortestPath.html">oass.ShortestPath</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>OASS for Order Execution</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/OrderExecution.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="oass-for-order-execution">
+<h1>OASS for Order Execution<a class="headerlink" href="#oass-for-order-execution" title="Permalink to this headline"></a></h1>
+<p>This tutorial is an example of applying OASS to the order execution task, which aims to determine the best time to buy and sell a stock. Similar to the algorithmic trading problem, order execution is also a practical problem in finance. The OASS library does not provide algorithms specifically for solving order execution problems, so this document will help you understand how to use OASS to develop solutions for specific problems.</p>
+<p>In the order execution problem, suppose we need to buy a certain stock on a certain day, buying a large amount at once will incur a large impact cost. To avoid this situation, we usually need to split the order to be executed at multiple time steps. Suppose there are <img class="math" src="../_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/> time steps in a day and we need to buy the stock <img class="math" src="../_images/math/e9bc7da808d33a16a8347f27a519bd067186aa66.png" alt="m"/> times. We want the average price of these <img class="math" src="../_images/math/e9bc7da808d33a16a8347f27a519bd067186aa66.png" alt="m"/> buys to be as low as possible.</p>
+<p>The first step is to create a DAG. We use <img class="math" src="../_images/math/7daa43bc1a5eb2d7265e8d6536d134d5279e596e.png" alt="n\times m"/> nodes to represent the state of the trader at each time node, i.e., <img class="math" src="../_images/math/fbe9c7293ddf4f78748f42b124db0d413169e320.png" alt="(i,j)"/>, where <img class="math" src="../_images/math/007e34d2be11fcc187e6bde997b7c4defd496a57.png" alt="i=0,1,\dots,n-1"/> denotes the time step and <img class="math" src="../_images/math/b2ea007a9eacb670acb6d241624264783d38af3f.png" alt="j=0,1,\dots,m-1"/> denotes the number of times the trader has bought. In addition, an additional node <img class="math" src="../_images/math/4cff964c6555732c7cd1d176df745da1e4559bf4.png" alt="(i_\text{final},m)"/> indicates the state after all <img class="math" src="../_images/math/e9bc7da808d33a16a8347f27a519bd067186aa66.png" alt="m"/> buys have been executed. Using <img class="math" src="../_images/math/6a7eefc27508d86f0448fff7fe0b8cde87918233.png" alt="m=5"/> as an example, this DAG is shown in the figure below.</p>
+<img alt="../_images/12.jpg" src="../_images/12.jpg" />
+<p>Next, consider how to define the node reward and the edge reward. When the trader chooses not to buy, the node <img class="math" src="../_images/math/fbe9c7293ddf4f78748f42b124db0d413169e320.png" alt="(i,j)"/> is shifted to <img class="math" src="../_images/math/d59fd7745eac768141aed872b6f58fbf94665f2f.png" alt="(i+1,j)"/> with an edge reward of 0. When the trader chooses to buy, moving from node <img class="math" src="../_images/math/fbe9c7293ddf4f78748f42b124db0d413169e320.png" alt="(i,j)"/> to <img class="math" src="../_images/math/88cb4219bf2dd6d9f466e4dc13f1924bee906c5f.png" alt="(i+1,j+1)"/> the edge reward is <img class="math" src="../_images/math/3002ed04d50854e424dd87d92424b2423a000954.png" alt="\overline{p}_i^{\text{[buy]}}-p_i^{\text{[buy]}}"/> which is the average price of the day’s buy minus the price of the current time step buy. The node reward is not needed in this problem, so it is set to 0.</p>
+<img alt="../_images/13.jpg" src="../_images/13.jpg" />
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">oass</span>
+</pre></div>
+</div>
+<p>The dataset used in this problem is exactly the same as in OASS for Algorithmic Trading. <code class="docutils literal notranslate"><span class="pre">HEAD_MASK</span></code> is also applied, but <code class="docutils literal notranslate"><span class="pre">TAIL_MASK</span></code> is not required.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SEQUENCE_LENGTH</span> <span class="o">=</span> <span class="mi">240</span>
+<span class="n">HEAD_MASK</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">TAIL_MASK</span> <span class="o">=</span> <span class="mi">220</span>
+<span class="n">INPUT_SIZE</span> <span class="o">=</span> <span class="mi">49</span>
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_dataloader</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">input_data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;input_data&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">buy_price</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;buy_price&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">sell_price</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;sell_price&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">TensorDataset</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">buy_price</span><span class="p">,</span> <span class="n">sell_price</span><span class="p">)</span>
+    <span class="n">data_loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_loader</span>
+
+<span class="n">data_loader_train</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;data/at/example_train_data.npz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create a DAG that we described above.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">build_DAG</span><span class="p">(</span><span class="n">sequence_length</span><span class="p">):</span>
+    <span class="n">G</span> <span class="o">=</span> <span class="n">oass</span><span class="o">.</span><span class="n">StaticDirectedAcyclicGraph</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sequence_length</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">si</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">si</span><span class="p">))</span>
+    <span class="n">G</span><span class="o">.</span><span class="n">add_node</span><span class="p">((</span><span class="s2">&quot;final&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">sequence_length</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">si</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+            <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">si</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">si</span><span class="p">))</span>
+            <span class="k">if</span> <span class="n">si</span><span class="o">==</span><span class="mi">4</span><span class="p">:</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">si</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;final&quot;</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">G</span><span class="o">.</span><span class="n">add_edge</span><span class="p">((</span><span class="n">i</span><span class="p">,</span><span class="n">si</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">si</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">G</span>
+
+<span class="n">G</span> <span class="o">=</span> <span class="n">build_DAG</span><span class="p">(</span><span class="n">SEQUENCE_LENGTH</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>An LSTM-based neural network model is constructed for decision making. This model has roughly the same structure as the one we used in the algorithmic trading problem, differing only in the output layer.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TradeModel</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A basic model for OASS. This model contains a multilayer LSTM and a Fully connected layer.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_size (int): The dimension of environment state at one time step.</span>
+<span class="sd">        hidden_size (int): The hidden_size in LSTM module.</span>
+<span class="sd">        num_layers (int): The number of layer in LSTM module.</span>
+<span class="sd">        dropout (int): The dropout probability of each layer except the last layer in LSTM module.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TradeModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LSTM_layers</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="o">=</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Forward function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.tensor): A batch of sequencial environment states. The shape is ``(batch_size, sequence_length, input_size)``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            action_prob (torch.tensor): The model\&#39;s output. The shape is ``(batch_size, sequence_length, 5, 2)``.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LSTM_layers</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="n">action_prob</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span>
+            <span class="n">action_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">action_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span>
+        <span class="p">))</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">action_prob</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">action_prob</span>
+
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">TradeModel</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="mi">49</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">)</span>
+<span class="n">gradient_calculator</span> <span class="o">=</span> <span class="n">oass</span><span class="o">.</span><span class="n">GradientCalculator</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A sequence is selected in the training data to show the decisions of the model before training.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">example_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;data/at/example_train_data.npz&quot;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">example_id</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">example_input_data</span> <span class="o">=</span> <span class="n">example_data</span><span class="p">[</span><span class="s2">&quot;input_data&quot;</span><span class="p">][</span><span class="n">example_id</span><span class="p">:</span> <span class="n">example_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">example_buy_price</span> <span class="o">=</span> <span class="n">example_data</span><span class="p">[</span><span class="s2">&quot;buy_price&quot;</span><span class="p">][</span><span class="n">example_id</span><span class="p">:</span> <span class="n">example_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">example_sell_price</span> <span class="o">=</span> <span class="n">example_data</span><span class="p">[</span><span class="s2">&quot;sell_price&quot;</span><span class="p">][</span><span class="n">example_id</span><span class="p">:</span> <span class="n">example_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">example_data</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">show_decision</span><span class="p">(</span><span class="n">gradient_calculator</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">buy_price</span><span class="p">,</span> <span class="n">sell_price</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">))[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:]</span>
+    <span class="n">action_prob</span><span class="p">[:</span><span class="n">HEAD_MASK</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">action_prob</span><span class="p">[:</span><span class="n">HEAD_MASK</span><span class="p">,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">action_prob</span> <span class="o">=</span> <span class="n">action_prob</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">action_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">gradient_calculator</span><span class="o">.</span><span class="n">get_path</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">action_prob</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="n">buy_price</span><span class="p">,</span> <span class="n">sell_price</span> <span class="o">=</span> <span class="n">buy_price</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sell_price</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">buy_price</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;buy price&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sell_price</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;sell price&quot;</span><span class="p">)</span>
+    <span class="n">sell_point</span> <span class="o">=</span> <span class="p">[</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="k">if</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">&gt;</span><span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sell_point</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#d62728&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;sell point&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#d62728&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+
+<span class="n">show_decision</span><span class="p">(</span><span class="n">gradient_calculator</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">example_input_data</span><span class="p">,</span> <span class="n">example_buy_price</span><span class="p">,</span> <span class="n">example_sell_price</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/oass_oe2_6_0.png" src="../_images/oass_oe2_6_0.png" />
+<p>Train the model and show the decisions after training.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">train_epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data_loader</span><span class="p">,</span> <span class="n">gradient_calculator</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">start_node</span><span class="p">):</span>
+    <span class="n">sum_reward</span><span class="p">,</span> <span class="n">data_amount</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">observation</span><span class="p">,</span> <span class="n">buy_price</span><span class="p">,</span> <span class="n">sell_price</span> <span class="ow">in</span> <span class="n">data_loader</span><span class="p">:</span>
+        <span class="c1"># action_prob</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">observation</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">))</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="n">action_prob</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">action_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">action_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">action_prob</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># node reward</span>
+        <span class="n">node_reward</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">observation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">observation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="c1"># edge reward</span>
+        <span class="n">price</span> <span class="o">=</span> <span class="n">buy_price</span> <span class="o">/</span> <span class="n">buy_price</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">repeat</span><span class="p">((</span><span class="n">observation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">price</span> <span class="o">=</span> <span class="n">price</span> <span class="o">-</span> <span class="n">price</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">edge_reward</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">observation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">observation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">si</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+            <span class="n">edge_reward</span><span class="p">[:,:,</span><span class="n">si</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">price</span>
+        <span class="n">edge_reward</span> <span class="o">=</span> <span class="n">edge_reward</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">observation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">observation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">5</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">edge_reward</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">moveaxis</span><span class="p">(</span><span class="n">edge_reward</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># gradient</span>
+        <span class="n">E</span><span class="p">,</span> <span class="n">D</span> <span class="o">=</span> <span class="n">gradient_calculator</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">(</span>
+            <span class="n">G</span><span class="p">,</span>
+            <span class="n">action_prob</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
+            <span class="n">node_reward</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span>
+            <span class="n">edge_reward</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+        <span class="p">)</span>
+        <span class="n">sum_reward</span> <span class="o">+=</span> <span class="n">E</span><span class="p">[</span><span class="n">G</span><span class="o">.</span><span class="n">node2index</span><span class="p">[</span><span class="n">start_node</span><span class="p">]]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">data_amount</span> <span class="o">+=</span> <span class="n">observation</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># loss</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">D</span><span class="p">)),</span> <span class="n">D</span><span class="p">,</span> <span class="n">action_prob</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">d</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">i</span><span class="o">&gt;=</span><span class="n">HEAD_MASK</span><span class="o">*</span><span class="mi">5</span><span class="p">:</span>
+                <span class="n">loss</span> <span class="o">+=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">d</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span><span class="o">*</span><span class="n">p</span><span class="p">)</span>
+        <span class="c1"># optimize</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">sum_reward</span><span class="o">/</span><span class="n">data_amount</span>
+
+
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">200</span><span class="p">):</span>
+    <span class="n">reward</span> <span class="o">=</span> <span class="n">train_epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data_loader_train</span><span class="p">,</span> <span class="n">gradient_calculator</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">reward</span><span class="p">)</span>
+
+<span class="n">show_decision</span><span class="p">(</span><span class="n">gradient_calculator</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">example_input_data</span><span class="p">,</span> <span class="n">example_buy_price</span><span class="p">,</span> <span class="n">example_sell_price</span><span class="p">)</span>
+</pre></div>
+</div>
+<pre class="literal-block">0 -0.0014942813610371248
+1 -0.0014716360933819898
+2 -0.0014607491839029752
+3 -0.0014768458189546012
+4 -0.0014477918855334143
+...
+195 0.027223197131457877
+196 0.027580936562050497
+197 0.02900645669842168
+198 0.027587657581012833
+199 0.028280406162599015</pre>
+<img alt="../_images/oass_oe2_7_1.png" src="../_images/oass_oe2_7_1.png" />
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="AlgorithmicTrading.html" class="btn btn-neutral float-left" title="OASS for Algorithmic Trading" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../api/oass.StaticDirectedAcyclicGraph.html" class="btn btn-neutral float-right" title="oass.StaticDirectedAcyclicGraph" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Artiprocher.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

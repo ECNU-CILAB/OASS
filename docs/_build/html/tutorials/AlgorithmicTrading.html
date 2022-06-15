@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OASS for Algorithmic Trading &mdash; OASS 1.0.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="OASS for Order Execution" href="OrderExecution.html" />
+    <link rel="prev" title="OASS for Shortest Path" href="ShortestPath.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> OASS
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Tutorials</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="UnderstandingOASS.html">Understanding OASS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ShortestPath.html">OASS for Shortest Path</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OASS for Algorithmic Trading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="OrderExecution.html">OASS for Order Execution</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.StaticDirectedAcyclicGraph.html">oass.StaticDirectedAcyclicGraph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.GradientCalculator.html">oass.GradientCalculator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.AlgorithmicTrading.html">oass.AlgorithmicTrading</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api/oass.ShortestPath.html">oass.ShortestPath</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OASS</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>OASS for Algorithmic Trading</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorials/AlgorithmicTrading.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="oass-for-algorithmic-trading">
+<h1>OASS for Algorithmic Trading<a class="headerlink" href="#oass-for-algorithmic-trading" title="Permalink to this headline"></a></h1>
+<p>This tutorial is an example of applying OASS to algorithmic trading. Leveraging OASS, we can train a neural network model to make buy and sell decisions directly and achieve maximum returns.</p>
+<p>Before we start, we need to build a DAG to transform the algorithmic trading problem into a path planning problem. This DAG is shown in the following figure.</p>
+<img alt="../_images/8.jpg" src="../_images/8.jpg" />
+<p>Suppose there are <img class="math" src="../_images/math/5a939c5280da7202ca4531f175a7780ad5e1f80a.png" alt="n"/> time steps, denoted as <img class="math" src="../_images/math/b8c1b1260309f27136f3fbc539f78560c48193af.png" alt="0,1,\dots,n-1"/>. At each time step, the trader can hold <img class="math" src="../_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/>, <img class="math" src="../_images/math/31fdf41b39df23c95e52c5aef07f59d9adf82f3c.png" alt="0"/> or <img class="math" src="../_images/math/bb3bcf4d88dfa961f520a0d0cea612b738596d66.png" alt="-1"/> units of stock.</p>
+<ul class="simple">
+<li><p>Holding <img class="math" src="../_images/math/ec830c85a5fbb48028fe797044da6bdfb924c2fa.png" alt="1"/> unit of stock can benefit from the increase of stock price</p></li>
+<li><p>Holding <img class="math" src="../_images/math/31fdf41b39df23c95e52c5aef07f59d9adf82f3c.png" alt="0"/> units of stock is risk averse</p></li>
+<li><p>Holding <img class="math" src="../_images/math/bb3bcf4d88dfa961f520a0d0cea612b738596d66.png" alt="-1"/> units of stock can benefit from the decrease of stock price</p></li>
+</ul>
+<p>Therefore, there are a total of <img class="math" src="../_images/math/24f8298394590840f50413ac40c1aec8c95fc4f2.png" alt="3n"/> nodes in this DAG, and each node can be represented as <img class="math" src="../_images/math/fbe9c7293ddf4f78748f42b124db0d413169e320.png" alt="(i,j)"/>, where <img class="math" src="../_images/math/d59cbc085cd5985952f02c3d88a927a2e88a5a3c.png" alt="i\in\{0,1,\dots,n-1\}"/> represents a time step, and <img class="math" src="../_images/math/d4881451f90be16a97e4f73a08246a1c75401416.png" alt="j\in \{1,0,-1\}"/> indicates the number of stocks held, that is, the position status. When the position status of two adjacent time steps changes, the trader will buy or sell stocks.</p>
+<p>Next, consider how to define node rewards and edge rewards. We hope that the reward can directly represent the profit of trading, so we define the side reward as the amount of change in money.</p>
+<div class="math">
+<p><img src="../_images/math/ee4dcb1fc80656c882f4d269896724068e3b90b4.png" alt="R(\langle(i,j),(i+1,j+\delta)\rangle)=\begin{cases}
+-\delta p_i^{\text{[buy]}}-\alpha^{\text{[buy]}}|\delta| p_i^{\text{[buy]}},&amp;\text{if }\delta&gt;0\\
+\delta p_i^{\text{[sell]}}-\alpha^{\text{[sell]}}|\delta| p_i^{\text{[sell]}},&amp;\text{otherwise},
+\end{cases}"/></p>
+</div><p>where <img class="math" src="../_images/math/c19860c457b405e80d872a4cb42514ce31c96c2c.png" alt="p_i^{\text[buy]}"/> and <img class="math" src="../_images/math/9d3f10e2a2f04d1c0cc16a2f77b465ef6d7df808.png" alt="p_i^{[\text{sell}]}"/> denote the buying and selling prices at the time step <img class="math" src="../_images/math/5aa339d4daf45a810dda332e3c80a0698e526e04.png" alt="i"/>, respectively. Usually <img class="math" src="../_images/math/85dcca4c44648cc260d6492ebecfe0bf5f995132.png" alt="p_i^{\text{[buy]}}\ge p_i^{\text{[sell]}}"/>. <img class="math" src="../_images/math/2ebfaa921f6e3423d290220cbaceb95803c69ea6.png" alt="\alpha^{\text{[buy]}}"/> and <img class="math" src="../_images/math/8b929fcf59175b753140c08f973965ec2832de61.png" alt="\alpha^{\text{[sell]}}"/> denote the cost ratio when buying and selling, respectively. In this tutorial, we take the Chinese stock market as an example, thus <img class="math" src="../_images/math/b923426a428e8af4f40352da486ddcaf1b9c93ea.png" alt="\alpha^{\text{[buy]}}=\alpha^{\text{[sell]}}=0.001"/>.</p>
+<p>According to the above definition of side reward, the trader can receive a high reward if it decides to sell. To avoid this situation, we define the node reward for the last time step as the value of the stock held.</p>
+<div class="math">
+<p><img src="../_images/math/20c7a2ea736828f5ce667b346bef2f008ff0e6cc.png" alt="R((i,j))=\begin{cases}
+-p_i^{\text{[buy]}},&amp;\text{if }i=n-1\text{ and }j=-1,\\
+p_i^{\text{[sell]}},&amp;\text{if }i=n-1\text{ and }j=1,\\
+0,&amp;\text{otherwise}.
+\end{cases}"/></p>
+</div><p>Thus, the sum of the rewards on the path is the actual return, and OASS can directly pursue high return end-to-end.</p>
+<img alt="../_images/9.jpg" src="../_images/9.jpg" />
+<p>Since prices vary greatly from stock to stock, it is necessary to normalize the prices, which is very simple.</p>
+<div class="math">
+<p><img src="../_images/math/2a2a8955902852582930d448e1de3b9dbce54c56.png" alt="p_0\leftarrow \frac{p_0^{\text{[buy]}}+p_0^{\text{[sell]}}}{2},"/></p>
+</div><div class="math">
+<p><img src="../_images/math/222947e0356d2b76bacc4351d783b0ba2dc4ac20.png" alt="p_i^{\text{[buy]}}\leftarrow \frac{p_i^{\text{[buy]}}}{p_0},"/></p>
+</div><div class="math">
+<p><img src="../_images/math/2b2ba32f4233d0e12b24d3592dd3bdd63a8af521.png" alt="p_i^{\text{[sell]}}\leftarrow \frac{p_i^{\text{[sell]}}}{p_0}."/></p>
+</div><p>The above process has been packaged in <code class="docutils literal notranslate"><span class="pre">oass.AlgorithmicTrading.TrainerOASS</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">torch</span>
+<span class="kn">import</span> <span class="nn">oass</span>
+</pre></div>
+</div>
+<p>We introduce several parameters, where <code class="docutils literal notranslate"><span class="pre">DEVICE</span></code> indicates the computing device. We use GPU directly. We will describe other parameters later.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SEQUENCE_LENGTH</span> <span class="o">=</span> <span class="mi">240</span>
+<span class="n">HEAD_MASK</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">TAIL_MASK</span> <span class="o">=</span> <span class="mi">220</span>
+<span class="n">INPUT_SIZE</span> <span class="o">=</span> <span class="mi">49</span>
+<span class="n">DEVICE</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read the data. The dataset is stored in <code class="docutils literal notranslate"><span class="pre">.npz</span></code> format, and you can use the <code class="docutils literal notranslate"><span class="pre">np.savez_compressed</span></code> function to get a file in <code class="docutils literal notranslate"><span class="pre">.npz</span></code> format. The data needs to contain three parts.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">input_data</span></code>: The observation matrix of the model at each time step. <code class="docutils literal notranslate"><span class="pre">shape=(SEQUENCE_NUM,</span> <span class="pre">SEQUENCE_LENGTH,</span> <span class="pre">INPUT_SIZE)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">buy_price</span></code>: The price when buying at the buy time step, i.e. <img class="math" src="../_images/math/a49cd64592d74fcb05bd65d0c9c2e444b8d04cf0.png" alt="p_i^{\text{[buy]}}"/>. <code class="docutils literal notranslate"><span class="pre">shape=(SEQUENCE_NUM,</span> <span class="pre">SEQUENCE_LENGTH)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sell_price</span></code>: The price when selling at the buy time step, i.e. <img class="math" src="../_images/math/12bb7a0ba4522e68749d1ce93f55ceccb2c1e000.png" alt="p_i^{\text{[sell]}}"/>. <code class="docutils literal notranslate"><span class="pre">shape=(SEQUENCE_NUM,</span> <span class="pre">SEQUENCE_LENGTH)</span></code></p></li>
+</ul>
+<p>Due to the privacy of financial data, We are sorry that we cannot provide large-scale real data, we can only provide a sample data, but it is enough to demonstrate the power of OASS.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_dataloader</span><span class="p">(</span><span class="n">file_path</span><span class="p">):</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">input_data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;input_data&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">buy_price</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;buy_price&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">sell_price</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;sell_price&quot;</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">TensorDataset</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">buy_price</span><span class="p">,</span> <span class="n">sell_price</span><span class="p">)</span>
+    <span class="n">data_loader</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="o">=</span><span class="n">dataset</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_loader</span>
+
+<span class="n">data_loader_train</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="s2">&quot;data/at/example_train_data.npz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Build a neural network model that is a very simple multilayer LSTM model with input <code class="docutils literal notranslate"><span class="pre">BATCH_SIZE</span></code> <img class="math" src="../_images/math/8ef1f282527041d7d5c4a46dd2c60a02a7a7c00b.png" alt="\times"/> <code class="docutils literal notranslate"><span class="pre">SEQUENCE_LENGTH</span></code> <img class="math" src="../_images/math/8ef1f282527041d7d5c4a46dd2c60a02a7a7c00b.png" alt="\times"/> <code class="docutils literal notranslate"><span class="pre">INPUT_SIZE</span></code> observation and output <code class="docutils literal notranslate"><span class="pre">BATCH_SIZE</span></code> <img class="math" src="../_images/math/8ef1f282527041d7d5c4a46dd2c60a02a7a7c00b.png" alt="\times"/> <code class="docutils literal notranslate"><span class="pre">SEQUENCE_LENGTH</span></code> <img class="math" src="../_images/math/8ef1f282527041d7d5c4a46dd2c60a02a7a7c00b.png" alt="\times"/> <img class="math" src="../_images/math/3204f0580808cc1d3ded72d87384c025c9e7e272.png" alt="3"/> <img class="math" src="../_images/math/8ef1f282527041d7d5c4a46dd2c60a02a7a7c00b.png" alt="\times"/> <img class="math" src="../_images/math/3204f0580808cc1d3ded72d87384c025c9e7e272.png" alt="3"/> decision probabilities.</p>
+<img alt="../_images/10.jpg" src="../_images/10.jpg" />
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TradeModel</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;A basic model for OASS. This model contains a multilayer LSTM and a Fully connected layer. This model only takes environment states as input. The output at each time step is a 9-dimensional vector, i.e., a 3x3 matrix.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_size (int): The dimension of environment state at one time step.</span>
+<span class="sd">        hidden_size (int): The hidden_size in LSTM module.</span>
+<span class="sd">        num_layers (int): The number of layer in LSTM module.</span>
+<span class="sd">        dropout (int): The dropout probability of each layer except the last layer in LSTM module.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.2</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TradeModel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">LSTM_layers</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">LSTM</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="o">=</span><span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="n">num_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="n">dropout</span><span class="p">,</span> <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">actor_layer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">hidden_size</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Forward function.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (torch.tensor): A batch of sequencial environment states. The shape is ``(batch_size, sequence_length, input_size)``.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            action_prob (torch.tensor): The model\&#39;s output. The shape is ``(batch_size, sequence_length, 3, 3)``.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">LSTM_layers</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">actor_layer</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="n">action_prob</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span>
+            <span class="n">action_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+            <span class="n">action_prob</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+            <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span>
+        <span class="p">))</span>
+        <span class="n">action_prob</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">action_prob</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">action_prob</span>
+</pre></div>
+</div>
+<p>Considering the structure of the LSTM model, there is not enough historical information to make reliable decisions in the first few time steps of the sequence. Considering the principle of the OASS algorithm, there is not enough future information in the last few time steps to generate rewards. Therefore, we ignore the opening and closing time steps, which can be achieved by modifying the <code class="docutils literal notranslate"><span class="pre">HEAD_MASK</span></code> and <code class="docutils literal notranslate"><span class="pre">TAIL_MASK</span></code> parameters.</p>
+<img alt="../_images/11.jpg" src="../_images/11.jpg" />
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">trainer</span> <span class="o">=</span> <span class="n">oass</span><span class="o">.</span><span class="n">AlgorithmicTrading</span><span class="o">.</span><span class="n">TrainerOASS</span><span class="p">(</span>
+    <span class="n">head_mask</span> <span class="o">=</span> <span class="n">HEAD_MASK</span><span class="p">,</span>
+    <span class="n">tail_mask</span> <span class="o">=</span> <span class="n">TAIL_MASK</span><span class="p">,</span>
+    <span class="n">sequence_length</span> <span class="o">=</span> <span class="n">SEQUENCE_LENGTH</span><span class="p">,</span>
+    <span class="n">buy_cost_pct</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">sell_cost_pct</span> <span class="o">=</span> <span class="mf">0.001</span><span class="p">,</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">DEVICE</span>
+<span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">TradeModel</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="mi">49</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="n">decision_maker</span> <span class="o">=</span> <span class="n">oass</span><span class="o">.</span><span class="n">AlgorithmicTrading</span><span class="o">.</span><span class="n">DecisionMakerOASS</span><span class="p">(</span>
+    <span class="n">head_mask</span> <span class="o">=</span> <span class="n">HEAD_MASK</span><span class="p">,</span>
+    <span class="n">tail_mask</span> <span class="o">=</span> <span class="n">TAIL_MASK</span><span class="p">,</span>
+    <span class="n">device</span> <span class="o">=</span> <span class="n">DEVICE</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>A sequence is selected in the training data to show the decisions of the model before training.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">example_data</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">&quot;data/at/example_train_data.npz&quot;</span><span class="p">,</span> <span class="n">allow_pickle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">example_id</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">example_input_data</span> <span class="o">=</span> <span class="n">example_data</span><span class="p">[</span><span class="s2">&quot;input_data&quot;</span><span class="p">][</span><span class="n">example_id</span><span class="p">:</span> <span class="n">example_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">example_buy_price</span> <span class="o">=</span> <span class="n">example_data</span><span class="p">[</span><span class="s2">&quot;buy_price&quot;</span><span class="p">][</span><span class="n">example_id</span><span class="p">:</span> <span class="n">example_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">example_sell_price</span> <span class="o">=</span> <span class="n">example_data</span><span class="p">[</span><span class="s2">&quot;sell_price&quot;</span><span class="p">][</span><span class="n">example_id</span><span class="p">:</span> <span class="n">example_id</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">example_data</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">show_decision</span><span class="p">(</span><span class="n">decision_maker</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">,</span> <span class="n">buy_price</span><span class="p">,</span> <span class="n">sell_price</span><span class="p">):</span>
+    <span class="n">signal_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">decision_maker</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_data</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">buy_price</span><span class="p">,</span> <span class="n">sell_price</span><span class="p">,</span> <span class="n">signal_data</span> <span class="o">=</span> <span class="n">buy_price</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">sell_price</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">signal_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="mi">9</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">buy_price</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;buy price&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">sell_price</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;sell price&quot;</span><span class="p">)</span>
+    <span class="n">buy_point</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal_data</span><span class="p">))</span> <span class="k">if</span> <span class="n">signal_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&gt;</span><span class="n">signal_data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">buy_point</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#2ca02c&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;buy point&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#2ca02c&quot;</span><span class="p">)</span>
+    <span class="n">sell_point</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">signal_data</span><span class="p">))</span> <span class="k">if</span> <span class="n">signal_data</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">&lt;</span><span class="n">signal_data</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sell_point</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span><span class="o">==</span><span class="mi">0</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#d62728&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;sell point&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#d62728&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">signal_data</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;position&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">1.2</span><span class="p">,</span><span class="mf">1.2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">money</span><span class="p">,</span> <span class="n">stock</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="n">asset_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">buy_p</span><span class="p">,</span> <span class="n">sell_p</span><span class="p">,</span> <span class="n">signal</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">buy_price</span><span class="p">,</span> <span class="n">sell_price</span><span class="p">,</span> <span class="n">signal_data</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">signal</span><span class="o">&gt;</span><span class="n">stock</span><span class="p">:</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">signal</span> <span class="o">-</span> <span class="n">stock</span>
+            <span class="n">money</span> <span class="o">-=</span> <span class="n">delta</span> <span class="o">*</span> <span class="n">buy_p</span>
+            <span class="n">money</span> <span class="o">-=</span> <span class="n">delta</span> <span class="o">*</span> <span class="n">buy_p</span> <span class="o">*</span> <span class="mf">0.001</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">delta</span> <span class="o">=</span> <span class="n">stock</span> <span class="o">-</span> <span class="n">signal</span>
+            <span class="n">money</span> <span class="o">+=</span> <span class="n">delta</span> <span class="o">*</span> <span class="n">sell_p</span>
+            <span class="n">money</span> <span class="o">-=</span> <span class="n">delta</span> <span class="o">*</span> <span class="n">sell_p</span> <span class="o">*</span> <span class="mf">0.001</span>
+        <span class="n">stock</span> <span class="o">=</span> <span class="n">signal</span>
+        <span class="n">asset_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">money</span> <span class="o">+</span> <span class="n">stock</span><span class="o">*</span><span class="p">(</span><span class="n">buy_p</span><span class="o">+</span><span class="n">sell_p</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">asset_list</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;asset&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+
+
+<span class="n">show_decision</span><span class="p">(</span><span class="n">decision_maker</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">example_input_data</span><span class="p">,</span> <span class="n">example_buy_price</span><span class="p">,</span> <span class="n">example_sell_price</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/oass_at2_7_0.png" src="../_images/oass_at2_7_0.png" />
+<p>Next, we start the training process. Note that we use curriculum learning to first train with no transaction costs to encourage the model to capture short-term market changes, and then gradually increase the transaction costs to guide the model to construct a robust investment strategy. Formally, a difficulty factor <img class="math" src="../_images/math/01e3c131efcd8228eec92e01fa72a455df3ba0c8.png" alt="d\in [0,1]"/> is defined. The transaction price <img class="math" src="../_images/math/283f4820c704522cf4864174604e279f9acb92be.png" alt="p_i^{\text{[buy]}},p_i^{\text{[sell]}}"/> and the rate <img class="math" src="../_images/math/e7e908a00e91c719f867182da49722e705e03508.png" alt="\alpha^{\text{[buy]}},\alpha^{\text{ sell}}"/> are affected by this.</p>
+<div class="math">
+<p><img src="../_images/math/de58ac2627f52e175565381cbf284368ef3be2dc.png" alt="p_i^{\text{[buy]}}\leftarrow \frac{1+d}{2}p_i^{\text{[buy]}}+\frac{1-d}{2}p_i^{\text{[sell]}},"/></p>
+</div><div class="math">
+<p><img src="../_images/math/43504b37b50056755c4c21c4a22f26848f0f286f.png" alt="p_i^{\text{[sell]}}\leftarrow \frac{1-d}{2}p_i^{\text{[buy]}}+\frac{1+d}{2}p_i^{\text{[sell]}},"/></p>
+</div><div class="math">
+<p><img src="../_images/math/ec268a3008284688b5c712181badcd915424b9e8.png" alt="\alpha^{\text{[buy]}}\leftarrow d\alpha^{\text{[buy]}},"/></p>
+</div><div class="math">
+<p><img src="../_images/math/934d4487e342b75a1d67f531ae7a9cb11eaa3987.png" alt="\alpha^{\text{[sell]}}\leftarrow d\alpha^{\text{[sell]}}."/></p>
+</div><div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1000</span><span class="p">):</span>
+    <span class="n">trainer</span><span class="o">.</span><span class="n">difficulty</span> <span class="o">=</span> <span class="nb">max</span><span class="p">((</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="o">-</span><span class="mi">200</span><span class="p">)</span><span class="o">/</span><span class="mi">800</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">_</span><span class="p">,</span> <span class="n">reward_train</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">train_epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data_loader_train</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;epoch:&quot;</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="s2">&quot;reward:&quot;</span><span class="p">,</span> <span class="n">reward_train</span><span class="p">)</span>
+
+<span class="n">show_decision</span><span class="p">(</span><span class="n">decision_maker</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">example_input_data</span><span class="p">,</span> <span class="n">example_buy_price</span><span class="p">,</span> <span class="n">example_sell_price</span><span class="p">)</span>
+</pre></div>
+</div>
+<pre class="literal-block">epoch: 0 reward: -4.729216948063408e-05
+epoch: 1 reward: -2.0203719886443567e-05
+epoch: 2 reward: -5.471992694477254e-06
+epoch: 3 reward: 6.819567828551503e-06
+epoch: 4 reward: -1.1619394611772117e-05
+epoch: 5 reward: 3.274395907648531e-05
+...
+epoch: 995 reward: 0.04295553291798985
+epoch: 996 reward: 0.03634062086589008
+epoch: 997 reward: 0.03797032271239929
+epoch: 998 reward: 0.038265388261650886
+epoch: 999 reward: 0.038311712370954334</pre>
+<img alt="../_images/oass_at2_8_1.png" src="../_images/oass_at2_8_1.png" />
+<p>It is evident that with the assistance of OASS, the model is able to find high-return investment decisions.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ShortestPath.html" class="btn btn-neutral float-left" title="OASS for Shortest Path" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="OrderExecution.html" class="btn btn-neutral float-right" title="OASS for Order Execution" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Artiprocher.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
