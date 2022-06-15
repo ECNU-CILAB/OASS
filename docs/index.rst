@@ -34,3 +34,11 @@ OASS is still under development. When we are ready, you can install OASS directl
    api/oass.GradientCalculator.rst
    api/oass.AlgorithmicTrading.rst
    api/oass.ShortestPath.rst
+
+
+Indices and tables
+------------------
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
